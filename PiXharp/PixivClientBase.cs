@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using PiXharp.RawObjects;
 
 namespace PiXharp
 {
@@ -8,5 +9,7 @@ namespace PiXharp
         public abstract bool Authenticated { get; }
 
         public abstract Task LoginAsync(string pixivID, string password);
+
+        public abstract Task<IllustsPage> SearchAsync(string query);
     }
 }

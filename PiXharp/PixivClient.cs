@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using PiXharp.Authentication;
+using PiXharp.Exceptions;
+using PiXharp.RawObjects;
 
 namespace PiXharp
 {
@@ -20,12 +23,44 @@ namespace PiXharp
         public PixivClient()
         {
             _innerClient = new HttpClient();
-            _innerClient.DefaultRequestHeaders.Add("User-Agent", "PixivAndroidApp/5.0.64 (Android 6.0)");
+            _innerClient.DefaultRequestHeaders.Add("host", "app-api.pixiv.net");
+            _innerClient.DefaultRequestHeaders.Add("App-OS", "ios");
+            _innerClient.DefaultRequestHeaders.Add("App-OS-Version", "12.2");
+            _innerClient.DefaultRequestHeaders.Add("App-Version", "7.6.2");
+            _innerClient.DefaultRequestHeaders.Add("User-Agent", "PixivIOSApp/7.6.2 (iOS 12.2; iPhone9,1)");
+            _innerClient.BaseAddress = new Uri("https://app-api.pixiv.net");
         }
 
-        public override async Task LoginAsync(string pixivID, string password) => _token = await PixivAuthenticator.AuthenticateAsync(pixivID, password, clientID, clientSecret, hashSecret);
+        public override async Task LoginAsync(string pixivID, string password)
+        {
+            _token = await PixivAuthenticator.AuthenticateAsync(pixivID, password, clientID, clientSecret, hashSecret);
+            _innerClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token.AccessToken}");
+        }
 
         public override bool Authenticated => _token != null;
+
+        public override async Task<IllustsPage> SearchAsync(string query)
+        {
+            if (!Authenticated)
+            {
+                throw new PixivNotAuthenticatedException("Token is null. You must login before search.");
+            }
+
+            const string relativeUrl = "/v1/search/illust";
+            var parameters = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                { "word", query },
+                // TODO: ちゃんと実装する
+                { "search_target", "partial_match_for_tags" },
+                { "sort", "date_desc" },
+                { "filter", "for_ios" }
+            });
+
+            var response = await _innerClient.GetAsync($"{relativeUrl}?{await parameters.ReadAsStringAsync()}");
+            var json = await response.Content.ReadAsStringAsync();
+            var illustsPage = JsonSerializer.Deserialize<IllustsPage>(json);
+            return illustsPage;
+        }
 
         #region IDisposable Support
         // Dispose pattern
@@ -49,6 +84,7 @@ namespace PiXharp
             Dispose(true);
             // GC.SuppressFinalize(this);
         }
+
         #endregion
     }
 }
