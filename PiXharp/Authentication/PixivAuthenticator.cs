@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using PiXharp.Exceptions;
 
 namespace PiXharp.Authentication
 {
@@ -36,8 +37,15 @@ namespace PiXharp.Authentication
             request.Content = parameters;
             var response = await _innerClient.SendAsync(request);
 
-            var authenticationResponse = (await JsonSerializer.DeserializeAsync<AuthenticationResponse>(await response.Content.ReadAsStreamAsync())).Response;
-            return new Token(authenticationResponse.AccessToken, authenticationResponse.RefreshToken, long.Parse(authenticationResponse.User.ID));
+            if (response.IsSuccessStatusCode)
+            {
+                var authenticationResponse = (await JsonSerializer.DeserializeAsync<AuthenticationResponse>(await response.Content.ReadAsStreamAsync())).Response;
+                return new Token(authenticationResponse.AccessToken, authenticationResponse.RefreshToken, long.Parse(authenticationResponse.User.ID));
+            }
+            else
+            {
+                throw new PixivAuthenticationException("Failed to authenticate. Make sure ID and password are correct.");
+            }
         }
 
         private static string GetMD5HashString(string value, Encoding encoding)

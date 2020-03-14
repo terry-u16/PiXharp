@@ -20,5 +20,13 @@ namespace PiXharp.Test
 
             Assert.True(client.Authenticated);
         }
+
+        [Fact]
+        public async Task LoginFailureThrowsExceptionTest()
+        {
+            PixivClientBase client = new PixivClient();
+
+            await Assert.ThrowsAsync<Exceptions.PixivAuthenticationException>(() => client.LoginAsync("", ""));
+        }
     }
 }
