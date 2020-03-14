@@ -51,5 +51,29 @@ namespace PiXharp.Test
             Assert.True(result.Illusts.All(i => !string.IsNullOrEmpty(i.Title)));
             Assert.True(Uri.TryCreate(result.NextUrl, UriKind.Absolute, out _));
         }
+
+        [Fact]
+        public async Task SearchIllustsWithMultipleQueriesAsyncTest()
+        {
+            var client = await GetAuthenticatedClient();
+            var result = await client.SearchAsync("•—’q”T •Û“oSˆ¤");
+
+            Assert.NotNull(result.Illusts);
+            Assert.NotEmpty(result.Illusts);
+            Assert.True(result.Illusts.All(i => !string.IsNullOrEmpty(i.Title)));
+            Assert.True(Uri.TryCreate(result.NextUrl, UriKind.Absolute, out _));
+        }
+
+        [Fact]
+        public async Task SearchRatedIllustsAsyncTest()
+        {
+            var client = await GetAuthenticatedClient();
+            var result = await client.SearchAsync("•—’q”T R-18");
+
+            Assert.NotNull(result.Illusts);
+            Assert.NotEmpty(result.Illusts);
+            Assert.True(result.Illusts.All(i => !string.IsNullOrEmpty(i.Title)));
+            Assert.True(Uri.TryCreate(result.NextUrl, UriKind.Absolute, out _));
+        }
     }
 }
