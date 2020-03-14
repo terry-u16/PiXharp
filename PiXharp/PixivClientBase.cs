@@ -2,7 +2,7 @@
 
 namespace PiXharp
 {
-    public class Class1
+    public abstract class PixivClientBase
     {
     }
 }

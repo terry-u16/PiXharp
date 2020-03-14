@@ -3,7 +3,7 @@ using Xunit;
 
 namespace PiXharp.Test
 {
-    public class UnitTest1
+    public class PixivClientTest
     {
         [Fact]
         public void Test1()
