@@ -64,6 +64,8 @@ namespace PiXharp.RawObjects
         public bool Visible { get; set; }
         [JsonPropertyName("is_muted")]
         public bool IsMuted { get; set; }
+
+        public override string ToString() => $"{ID}:{Title}";
     }
 
     public class User
