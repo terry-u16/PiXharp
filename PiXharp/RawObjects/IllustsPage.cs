@@ -15,6 +15,12 @@ namespace PiXharp.RawObjects
         public int SearchSpanLimit { get; set; }
     }
 
+    public class IllustContainer
+    {
+        [JsonPropertyName("illust")]
+        public Illust? Illust { get; set; }
+    }
+
     public class Illust
     {
         [JsonPropertyName("id")]

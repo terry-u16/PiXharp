@@ -66,6 +66,34 @@ namespace PiXharp.Test
         }
 
         [Fact]
+        public async Task GetIllustDetailAsyncTest()
+        {
+            const long id = 80221680L;
+            var client = await GetAuthenticatedClient();
+            var result = await client.GetIllustDetailAsync(id);
+
+            Assert.Equal(id, result.ID);
+            Assert.Equal("「もう朝・・？」", result.Title);
+        }
+
+        [Fact]
+        public async Task GetIllustDetailOfInvalidIdThrowsExceptionTest()
+        {
+            const long id = 0L;
+            var client = await GetAuthenticatedClient();
+
+            await Assert.ThrowsAsync<PixivNotFoundException>(async () => await client.GetIllustDetailAsync(id));
+        }
+
+        [Fact]
+        public async Task GetIllustWithoutAuthenticationThrowsExceptionTest()
+        {
+            const long id = 0L;
+            var client = new PixivClient();
+            await Assert.ThrowsAsync<PixivNotAuthenticatedException>(async () => await client.GetIllustDetailAsync(id));
+        }
+
+        [Fact]
         public async Task SearchIllustsAsyncTest()
         {
             var client = await GetAuthenticatedClient();

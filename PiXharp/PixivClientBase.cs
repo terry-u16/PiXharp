@@ -16,6 +16,8 @@ namespace PiXharp
 
         public abstract Task LoginAsync(string pixivID, string password);
 
+        public abstract Task<Illust> GetIllustDetailAsync(long id);
+
         public abstract Task<IllustsPage> SearchAsync(string query);
 
         public abstract Task<Stream> DownloadIllustAsStreamAsync(Uri uri);

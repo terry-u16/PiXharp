@@ -65,6 +65,25 @@ namespace PiXharp
 
         public override bool Authenticated => _token != null;
 
+        public override async Task<Illust> GetIllustDetailAsync(long id)
+        {
+            if (!Authenticated)
+            {
+                throw new PixivNotAuthenticatedException("Token is null. You must login before search.");
+            }
+
+            const string relativeUrl = "/v1/illust/detail";
+            var parameters = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                { "illust_id", id.ToString() }
+            });
+
+            var response = await _innerClient.GetAsync($"{relativeUrl}?{await parameters.ReadAsStringAsync()}");
+            var json = await response.Content.ReadAsStringAsync();
+            var illust = JsonSerializer.Deserialize<IllustContainer>(json).Illust ?? throw new PixivNotFoundException($"Illust id {id} is not found. Make sure illust id is valid.");
+            return illust;
+        }
+
         public override async Task<IllustsPage> SearchAsync(string query)
         {
             if (!Authenticated)
