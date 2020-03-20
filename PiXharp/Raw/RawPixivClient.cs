@@ -11,7 +11,7 @@ using PiXharp.Exceptions;
 
 namespace PiXharp.Raw
 {
-    public class RawPixivClient : RawPixivClientBase, IDisposable
+    public class RawPixivClient : RawPixivClientBase
     {
         private readonly HttpClient _innerClient;
         private Token? _token;

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PiXharp.Raw
 {
-    public abstract class RawPixivClientBase
+    public abstract class RawPixivClientBase : IDisposable
     {
         public abstract bool Authenticated { get; }
 
@@ -22,5 +22,7 @@ namespace PiXharp.Raw
         public abstract Task<Stream> DownloadIllustAsStreamAsync(Uri uri);
 
         public Task<Stream> DownloadIllustAsStreamAsync(string uri) => DownloadIllustAsStreamAsync(new Uri(uri));
+
+        public void Dispose() { }
     }
 }
