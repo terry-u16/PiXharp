@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using PiXharp.RawObjects;
 
-namespace PiXharp
+namespace PiXharp.Raw
 {
-    public abstract class PixivClientBase
+    public abstract class RawPixivClientBase
     {
         public abstract bool Authenticated { get; }
 
@@ -16,9 +15,9 @@ namespace PiXharp
 
         public abstract Task LoginAsync(string pixivID, string password);
 
-        public abstract Task<Illust> GetIllustDetailAsync(long id);
+        public abstract Task<IllustResponse> GetIllustDetailAsync(long id);
 
-        public abstract Task<IllustsPage> SearchAsync(string query);
+        public abstract Task<IllustsPageResponse> SearchAsync(string query);
 
         public abstract Task<Stream> DownloadIllustAsStreamAsync(Uri uri);
 

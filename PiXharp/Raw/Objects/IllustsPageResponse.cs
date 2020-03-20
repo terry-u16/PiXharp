@@ -3,25 +3,25 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace PiXharp.RawObjects
+namespace PiXharp.Raw
 {
-    public class IllustsPage
+    public class IllustsPageResponse
     {
         [JsonPropertyName("illusts")]
-        public Illust[]? Illusts { get; set; }
+        public IllustResponse[]? Illusts { get; set; }
         [JsonPropertyName("next_url")]
         public string? NextUrl { get; set; }
         [JsonPropertyName("search_span_limit")]
         public int SearchSpanLimit { get; set; }
     }
 
-    public class IllustContainer
+    public class IllustContainerResponse
     {
         [JsonPropertyName("illust")]
-        public Illust? Illust { get; set; }
+        public IllustResponse? Illust { get; set; }
     }
 
-    public class Illust
+    public class IllustResponse
     {
         [JsonPropertyName("id")]
         public int ID { get; set; }
@@ -30,15 +30,15 @@ namespace PiXharp.RawObjects
         [JsonPropertyName("type")]
         public string? Type { get; set; }
         [JsonPropertyName("image_urls")]
-        public ImageUrl? ImageUrls { get; set; }
+        public ImageUrlResponse? ImageUrls { get; set; }
         [JsonPropertyName("caption")]
         public string? Caption { get; set; }
         [JsonPropertyName("restrict")]
         public int Restrict { get; set; }
         [JsonPropertyName("user")]
-        public User? User { get; set; }
+        public UserResponse? User { get; set; }
         [JsonPropertyName("tags")]
-        public Tag[]? Tags { get; set; }
+        public TagResponse[]? Tags { get; set; }
         [JsonPropertyName("tools")]
         public string[]? Tools { get; set; }
         [JsonPropertyName("create_date")]
@@ -57,9 +57,9 @@ namespace PiXharp.RawObjects
         [JsonPropertyName("series")]
         public object? Series { get; set; }
         [JsonPropertyName("meta_single_page")]
-        public MetaSinglePage? MetaSinglePage { get; set; }
+        public MetaSinglePageResponse? MetaSinglePage { get; set; }
         [JsonPropertyName("meta_pages")]
-        public MetaPage[]? MetaPages { get; set; }
+        public MetaPageResponse[]? MetaPages { get; set; }
         [JsonPropertyName("total_view")]
         public int TotalView { get; set; }
         [JsonPropertyName("total_bookmarks")]
@@ -74,7 +74,7 @@ namespace PiXharp.RawObjects
         public override string ToString() => $"{ID}:{Title}";
     }
 
-    public class User
+    public class UserResponse
     {
         [JsonPropertyName("id")]
         public int ID { get; set; }
@@ -83,24 +83,24 @@ namespace PiXharp.RawObjects
         [JsonPropertyName("account")]
         public string? Account { get; set; }
         [JsonPropertyName("profile_image_urls")]
-        public ProfileImageUrls? ProfileImageUrls { get; set; }
+        public ProfileImageUrlsResponse? ProfileImageUrls { get; set; }
         [JsonPropertyName("is_followed")]
         public bool IsFollowed { get; set; }
     }
 
-    public class ProfileImageUrls
+    public class ProfileImageUrlsResponse
     {
         [JsonPropertyName("medium")]
         public string? Medium { get; set; }
     }
 
-    public class MetaSinglePage
+    public class MetaSinglePageResponse
     {
         [JsonPropertyName("original_image_url")]
         public string? OriginalImageUrl { get; set; }
     }
 
-    public class Tag
+    public class TagResponse
     {
         [JsonPropertyName("name")]
         public string? Name { get; set; }
@@ -109,13 +109,13 @@ namespace PiXharp.RawObjects
         public object? TranslatedName { get; set; }
     }
 
-    public class MetaPage
+    public class MetaPageResponse
     {
         [JsonPropertyName("image_urls")]
-        public ImageUrl? ImageUrls { get; set; }
+        public ImageUrlResponse? ImageUrls { get; set; }
     }
 
-    public class ImageUrl
+    public class ImageUrlResponse
     {
         [JsonPropertyName("square_medium")]
         public string? SquareMedium { get; set; }

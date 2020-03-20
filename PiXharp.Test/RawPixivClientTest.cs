@@ -7,17 +7,18 @@ using System.Text.Json;
 using System.Linq;
 using PiXharp.Exceptions;
 using System.Text;
+using PiXharp.Raw;
 
 namespace PiXharp.Test
 {
-    public class PixivClientTest
+    public class RawPixivClientTest
     {
         [Fact]
         public async Task LoginTest()
         {
             using var stream = new FileStream("user.json", FileMode.Open, FileAccess.Read);
             var profile = await JsonSerializer.DeserializeAsync<UserAuthenticationProfile>(stream);
-            using var client = new PixivClient();
+            using var client = new RawPixivClient();
 
             await client.LoginAsync(profile.PixivID ?? "", profile.Password ?? "");
 
@@ -27,7 +28,7 @@ namespace PiXharp.Test
         [Fact]
         public async Task LoginFailureThrowsExceptionTest()
         {
-            using var client = new PixivClient();
+            using var client = new RawPixivClient();
 
             await Assert.ThrowsAsync<Exceptions.PixivAuthenticationException>(() => client.LoginAsync("", ""));
         }
@@ -42,7 +43,7 @@ namespace PiXharp.Test
         [Fact]
         public async Task LoginByRefreshTokenTest()
         {
-            using var client = new PixivClient();
+            using var client = new RawPixivClient();
             
             var refreshToken = await LoadTokenAsync();
             await client.LoginAsync(refreshToken);
@@ -56,10 +57,10 @@ namespace PiXharp.Test
             return await stream.ReadToEndAsync();
         }
 
-        private async Task<PixivClient> GetAuthenticatedClient()
+        private async Task<RawPixivClient> GetAuthenticatedClient()
         {
             var refreshToken = await LoadTokenAsync();
-            var client = new PixivClient();
+            var client = new RawPixivClient();
             await client.LoginAsync(refreshToken);
 
             return client;
@@ -89,7 +90,7 @@ namespace PiXharp.Test
         public async Task GetIllustWithoutAuthenticationThrowsExceptionTest()
         {
             const long id = 0L;
-            using var client = new PixivClient();
+            using var client = new RawPixivClient();
             await Assert.ThrowsAsync<PixivNotAuthenticatedException>(async () => await client.GetIllustDetailAsync(id));
         }
 

@@ -8,11 +8,10 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using PiXharp.Authentication;
 using PiXharp.Exceptions;
-using PiXharp.RawObjects;
 
-namespace PiXharp
+namespace PiXharp.Raw
 {
-    public class PixivClient : PixivClientBase, IDisposable
+    public class RawPixivClient : RawPixivClientBase, IDisposable
     {
         private readonly HttpClient _innerClient;
         private Token? _token;
@@ -23,7 +22,7 @@ namespace PiXharp
 
         public override string? RefreshToken => _token?.RefreshToken;
 
-        public PixivClient()
+        public RawPixivClient()
         {
             var handler = new HttpClientHandler()
             {
@@ -65,7 +64,7 @@ namespace PiXharp
 
         public override bool Authenticated => _token != null;
 
-        public override async Task<Illust> GetIllustDetailAsync(long id)
+        public override async Task<IllustResponse> GetIllustDetailAsync(long id)
         {
             if (!Authenticated)
             {
@@ -80,11 +79,11 @@ namespace PiXharp
 
             var response = await _innerClient.GetAsync($"{relativeUrl}?{await parameters.ReadAsStringAsync()}");
             var json = await response.Content.ReadAsStringAsync();
-            var illust = JsonSerializer.Deserialize<IllustContainer>(json).Illust ?? throw new PixivNotFoundException($"Illust id {id} is not found. Make sure illust id is valid.");
+            var illust = JsonSerializer.Deserialize<IllustContainerResponse>(json).Illust ?? throw new PixivNotFoundException($"Illust id {id} is not found. Make sure illust id is valid.");
             return illust;
         }
 
-        public override async Task<IllustsPage> SearchAsync(string query)
+        public override async Task<IllustsPageResponse> SearchAsync(string query)
         {
             if (!Authenticated)
             {
@@ -103,7 +102,7 @@ namespace PiXharp
 
             var response = await _innerClient.GetAsync($"{relativeUrl}?{await parameters.ReadAsStringAsync()}");
             var json = await response.Content.ReadAsStringAsync();
-            var illustsPage = JsonSerializer.Deserialize<IllustsPage>(json);
+            var illustsPage = JsonSerializer.Deserialize<IllustsPageResponse>(json);
             return illustsPage;
         }
 
