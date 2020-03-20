@@ -67,6 +67,17 @@ namespace PiXharp.Test
 
         }
 
+        [Fact]
+        public async Task GetIllustDetailAsyncTest()
+        {
+            const long id = 80221680L;
+            using var client = await GetAuthenticatedClient();
+            var result = await client.GetIllustDetailAsync(id);
+
+            Assert.Equal(id, result.ID);
+            Assert.Equal("「もう朝・・？」", result.Title);
+        }
+
         #region Private methods
 
         private async Task<PixivClient> GetAuthenticatedClient()

@@ -130,7 +130,7 @@ namespace PiXharp.Test
             var uri = new Uri("https://i.pximg.net/img-original/img/2020/03/19/19/20/13/80221680_p0.jpg");
 
             using var stream = await client.DownloadIllustAsStreamAsync(uri);
-            var hash = GetSha256Hash(stream);
+            var hash = PixivClientTestUtility.GetSha256Hash(stream);
 
             Assert.Equal("F5FC970E3285FF8D13157B0AFABCFB74D751B78DAD24198D25C1AD6B883FF21E", hash);
         }
@@ -142,17 +142,11 @@ namespace PiXharp.Test
             var uri = "https://i.pximg.net/img-original/img/2020/03/19/19/20/13/80221680_p0.jpg";
 
             using var stream = await client.DownloadIllustAsStreamAsync(uri);
-            var hash = GetSha256Hash(stream);
+            var hash = PixivClientTestUtility.GetSha256Hash(stream);
 
             Assert.Equal("F5FC970E3285FF8D13157B0AFABCFB74D751B78DAD24198D25C1AD6B883FF21E", hash);
         }
 
-        private string GetSha256Hash(Stream stream)
-        {
-            var sha256 = System.Security.Cryptography.SHA256.Create();
-            var hash = BitConverter.ToString(sha256.ComputeHash(stream)).Replace("-", "");
-            return hash;
-        }
 
         [Fact]
         public async Task DownloadSingleIllustAsStreamByInvalidUriThrowsPixivNotFoundExceptionTest()

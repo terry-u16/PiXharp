@@ -15,6 +15,8 @@ namespace PiXharp
 
         public abstract Task LoginAsync(string pixivID, string password);
 
+        public abstract Task<Illust> GetIllustDetailAsync(long id);
+
         public abstract IAsyncEnumerable<Illust> SearchIllustsAsync(string query);
 
         #region IDisposable Support

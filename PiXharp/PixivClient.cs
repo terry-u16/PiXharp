@@ -23,6 +23,9 @@ namespace PiXharp
 
         public override async Task LoginAsync(string pixivID, string password) => await _rawClient.LoginAsync(pixivID, password);
 
+        public async override Task<Illust> GetIllustDetailAsync(long id) => new Illust(await _rawClient.GetIllustDetailAsync(id));
+
+
         public override async IAsyncEnumerable<Illust> SearchIllustsAsync(string query)
         {
             var response = await _rawClient.SearchAsync(query);
