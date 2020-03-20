@@ -12,13 +12,14 @@ namespace PiXharp
 
         public override bool Authenticated => _rawClient.Authenticated;
 
+        public override string? RefreshToken => _rawClient.RefreshToken;
+
         public PixivClient()
         {
         }
 
-        public override async Task LoginAsync(string pixivID, string password)
-        {
-            await _rawClient.LoginAsync(pixivID, password);
-        }
+        public override Task LoginAsync(string refreshToken) => _rawClient.LoginAsync(refreshToken);
+
+        public override async Task LoginAsync(string pixivID, string password) => await _rawClient.LoginAsync(pixivID, password);
     }
 }

@@ -29,7 +29,7 @@ namespace PiXharp.Test
         {
             using var client = new RawPixivClient();
 
-            await Assert.ThrowsAsync<Exceptions.PixivAuthenticationException>(() => client.LoginAsync("", ""));
+            await Assert.ThrowsAsync<PixivAuthenticationException>(() => client.LoginAsync("", ""));
         }
 
         [Fact]

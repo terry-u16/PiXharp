@@ -22,5 +22,39 @@ namespace PiXharp.Test
 
             Assert.True(client.Authenticated);
         }
+
+        public async Task LoginFailureThrowsExceptionTest()
+        {
+            using var client = new PixivClient();
+
+            await Assert.ThrowsAsync<PixivAuthenticationException>(() => client.LoginAsync("", ""));
+        }
+
+        [Fact]
+        public async Task GetRefreshTokenTest()
+        {
+            using var client = await GetAuthenticatedClient();
+            Assert.NotNull(client.RefreshToken);
+        }
+
+        [Fact]
+        public async Task LoginByRefreshTokenTest()
+        {
+            using var client = new PixivClient();
+
+            var refreshToken = await PixivClientTestUtility.LoadTokenAsync("refresh_token.txt");
+            await client.LoginAsync(refreshToken);
+
+            Assert.True(client.Authenticated);
+        }
+
+        private async Task<PixivClient> GetAuthenticatedClient()
+        {
+            var refreshToken = await PixivClientTestUtility.LoadTokenAsync("refresh_token.txt");
+            var client = new PixivClient();
+            await client.LoginAsync(refreshToken);
+
+            return client;
+        }
     }
 }
