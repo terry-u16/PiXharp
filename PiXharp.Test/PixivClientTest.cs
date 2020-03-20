@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Text.Json;
 using System.Linq;
+using PiXharp.Exceptions;
 
 namespace PiXharp.Test
 {
@@ -105,6 +106,15 @@ namespace PiXharp.Test
             var sha256 = System.Security.Cryptography.SHA256.Create();
             var hash = BitConverter.ToString(sha256.ComputeHash(stream)).Replace("-", "");
             return hash;
+        }
+
+        [Fact]
+        public async Task DownloadSingleIllustAsStreamByInvalidUriThrowsPixivNotFoundExceptionTest()
+        {
+            var client = await GetAuthenticatedClient();
+            var uri = new Uri("https://i.pximg.net/img-original/img/2020/03/19/19/20/13/xxxxxxxx_p0.jpg");
+
+            await Assert.ThrowsAsync<PixivNotFoundException>(async () => await client.DownloadIllustAsStreamAsync(uri));
         }
     }
 }

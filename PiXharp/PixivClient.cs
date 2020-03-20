@@ -81,11 +81,29 @@ namespace PiXharp
 
         public override async Task<Stream> DownloadIllustAsStreamAsync(Uri uri)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, uri);
-            request.Headers.Add("Referer", "https://app-api.pixiv.net/");
-            var response = await _innerClient.SendAsync(request);
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, uri);
+                request.Headers.Add("Referer", "https://app-api.pixiv.net/");
+                var response = await _innerClient.SendAsync(request);
 
-            return await response.Content.ReadAsStreamAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsStreamAsync();
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    throw new PixivNotFoundException("Image not found. Make sure the uri is valid.");
+                }
+                else
+                {
+                    throw new PixivException($"Http error occured. Status code: {response.StatusCode} {response.ReasonPhrase}");
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new PixivException("Http error occured. For more information, please check inner exceptions.", ex);
+            }
         }
 
         #region IDisposable Support
