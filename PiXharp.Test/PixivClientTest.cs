@@ -6,6 +6,7 @@ using System.IO;
 using System.Text.Json;
 using System.Linq;
 using PiXharp.Exceptions;
+using System.Text;
 
 namespace PiXharp.Test
 {
@@ -41,20 +42,25 @@ namespace PiXharp.Test
         [Fact]
         public async Task LoginByRefreshTokenTest()
         {
-            var refreshToken = (await GetAuthenticatedClient()).RefreshToken ?? "";
             var client = new PixivClient();
             
+            var refreshToken = await LoadTokenAsync();
             await client.LoginAsync(refreshToken);
 
             Assert.True(client.Authenticated);
         }
 
+        private async Task<string> LoadTokenAsync()
+        {
+            using var stream = new StreamReader("refresh_token.txt", Encoding.UTF8);
+            return await stream.ReadToEndAsync();
+        }
+
         private async Task<PixivClientBase> GetAuthenticatedClient()
         {
-            using var stream = new FileStream("user.json", FileMode.Open, FileAccess.Read);
-            var profile = await JsonSerializer.DeserializeAsync<UserAuthenticationProfile>(stream);
+            var refreshToken = await LoadTokenAsync();
             PixivClientBase client = new PixivClient();
-            await client.LoginAsync(profile.PixivID ?? "", profile.Password ?? "");
+            await client.LoginAsync(refreshToken);
 
             return client;
         }

@@ -351,3 +351,4 @@ MigrationBackup/
 
 # Auth file
 user.json
+refresh_token.txt

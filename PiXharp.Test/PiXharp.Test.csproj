@@ -24,6 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="refresh_token.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="user.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
