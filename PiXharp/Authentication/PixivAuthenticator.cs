@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using PiXharp.Exceptions;
+using System.Linq;
 
 namespace PiXharp.Authentication
 {
@@ -15,39 +16,28 @@ namespace PiXharp.Authentication
 
         internal static async Task<Token> AuthenticateAsync(string refreshToken, string clientID, string clientSecret, string hashSecret)
         {
-            var localTime = DateTimeOffset.UtcNow.ToString("yyyy-MM-ddTHH:mm:sszzz");
-            using var md5 = MD5.Create();
-            var clientHash = GetMD5HashString(localTime + hashSecret, Encoding.UTF8);
-
-            var request = new HttpRequestMessage(HttpMethod.Post, @"https://oauth.secure.pixiv.net/auth/token");
-            request.Headers.Add("User-Agent", "PixivAndroidApp/5.0.64 (Android 6.0)");
-            request.Headers.Add("X-Client-Time", localTime);
-            request.Headers.Add("X-Client-Hash", clientHash);
-            request.Headers.Add("host", "oauth.secure.pixiv.net");
-
-            var parameters = new FormUrlEncodedContent(new Dictionary<string, string>
+            var loginParameters = new Dictionary<string, string>
             {
-                { "get_secure_url", "1" },
-                { "client_id", clientID },
-                { "client_secret", clientSecret },
                 { "grant_type", "refresh_token" },
                 { "refresh_token", refreshToken }
-            });
-            request.Content = parameters;
-            var response = await _innerClient.SendAsync(request);
+            };
 
-            if (response.IsSuccessStatusCode)
-            {
-                var authenticationResponse = (await JsonSerializer.DeserializeAsync<AuthenticationResponse>(await response.Content.ReadAsStreamAsync())).Response;
-                return new Token(authenticationResponse.AccessToken, authenticationResponse.RefreshToken, long.Parse(authenticationResponse.User.ID));
-            }
-            else
-            {
-                throw new PixivAuthenticationException("Failed to authenticate. Make sure ID and password are correct.");
-            }
+            return await AuthenticateAsync(loginParameters, clientID, clientSecret, hashSecret);
         }
 
         internal static async Task<Token> AuthenticateAsync(string pixivID, string password, string clientID, string clientSecret, string hashSecret)
+        {
+            var loginParameters = new Dictionary<string, string>
+            {
+                { "grant_type", "password" },
+                { "username", pixivID },
+                { "password", password }
+            };
+
+            return await AuthenticateAsync(loginParameters, clientID, clientSecret, hashSecret);
+        }
+
+        private static async Task<Token> AuthenticateAsync(IEnumerable<KeyValuePair<string, string>> loginParameters, string clientID, string clientSecret, string hashSecret)
         {
             var localTime = DateTimeOffset.UtcNow.ToString("yyyy-MM-ddTHH:mm:sszzz");
             using var md5 = MD5.Create();
@@ -63,11 +53,9 @@ namespace PiXharp.Authentication
             {
                 { "get_secure_url", "1" },
                 { "client_id", clientID },
-                { "client_secret", clientSecret },
-                { "grant_type", "password" },
-                { "username", pixivID },
-                { "password", password }
-            });
+                { "client_secret", clientSecret }
+            }.Concat(loginParameters));
+
             request.Content = parameters;
             var response = await _innerClient.SendAsync(request);
 
@@ -95,7 +83,5 @@ namespace PiXharp.Authentication
 
             return resultBuilder.ToString();
         }
-
-        
     }
 }
