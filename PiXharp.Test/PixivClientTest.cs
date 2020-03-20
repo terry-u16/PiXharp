@@ -17,7 +17,7 @@ namespace PiXharp.Test
         {
             using var stream = new FileStream("user.json", FileMode.Open, FileAccess.Read);
             var profile = await JsonSerializer.DeserializeAsync<UserAuthenticationProfile>(stream);
-            PixivClientBase client = new PixivClient();
+            using var client = new PixivClient();
 
             await client.LoginAsync(profile.PixivID ?? "", profile.Password ?? "");
 
@@ -27,7 +27,7 @@ namespace PiXharp.Test
         [Fact]
         public async Task LoginFailureThrowsExceptionTest()
         {
-            PixivClientBase client = new PixivClient();
+            using var client = new PixivClient();
 
             await Assert.ThrowsAsync<Exceptions.PixivAuthenticationException>(() => client.LoginAsync("", ""));
         }
@@ -35,14 +35,14 @@ namespace PiXharp.Test
         [Fact]
         public async Task GetRefreshTokenTest()
         {
-            var client = await GetAuthenticatedClient();
+            using var client = await GetAuthenticatedClient();
             Assert.NotNull(client.RefreshToken);
         }
 
         [Fact]
         public async Task LoginByRefreshTokenTest()
         {
-            var client = new PixivClient();
+            using var client = new PixivClient();
             
             var refreshToken = await LoadTokenAsync();
             await client.LoginAsync(refreshToken);
@@ -56,10 +56,10 @@ namespace PiXharp.Test
             return await stream.ReadToEndAsync();
         }
 
-        private async Task<PixivClientBase> GetAuthenticatedClient()
+        private async Task<PixivClient> GetAuthenticatedClient()
         {
             var refreshToken = await LoadTokenAsync();
-            PixivClientBase client = new PixivClient();
+            var client = new PixivClient();
             await client.LoginAsync(refreshToken);
 
             return client;
@@ -69,7 +69,7 @@ namespace PiXharp.Test
         public async Task GetIllustDetailAsyncTest()
         {
             const long id = 80221680L;
-            var client = await GetAuthenticatedClient();
+            using var client = await GetAuthenticatedClient();
             var result = await client.GetIllustDetailAsync(id);
 
             Assert.Equal(id, result.ID);
@@ -80,7 +80,7 @@ namespace PiXharp.Test
         public async Task GetIllustDetailOfInvalidIdThrowsExceptionTest()
         {
             const long id = 0L;
-            var client = await GetAuthenticatedClient();
+            using var client = await GetAuthenticatedClient();
 
             await Assert.ThrowsAsync<PixivNotFoundException>(async () => await client.GetIllustDetailAsync(id));
         }
@@ -89,14 +89,14 @@ namespace PiXharp.Test
         public async Task GetIllustWithoutAuthenticationThrowsExceptionTest()
         {
             const long id = 0L;
-            var client = new PixivClient();
+            using var client = new PixivClient();
             await Assert.ThrowsAsync<PixivNotAuthenticatedException>(async () => await client.GetIllustDetailAsync(id));
         }
 
         [Fact]
         public async Task SearchIllustsAsyncTest()
         {
-            var client = await GetAuthenticatedClient();
+            using var client = await GetAuthenticatedClient();
             var result = await client.SearchAsync("çÅïóíqîT");
 
             Assert.NotNull(result.Illusts);
@@ -108,7 +108,7 @@ namespace PiXharp.Test
         [Fact]
         public async Task SearchIllustsWithMultipleQueriesAsyncTest()
         {
-            var client = await GetAuthenticatedClient();
+            using var client = await GetAuthenticatedClient();
             var result = await client.SearchAsync("çÅïóíqîT ï€ìoêSà§");
 
             Assert.NotNull(result.Illusts);
@@ -120,7 +120,7 @@ namespace PiXharp.Test
         [Fact]
         public async Task SearchRatedIllustsAsyncTest()
         {
-            var client = await GetAuthenticatedClient();
+            using var client = await GetAuthenticatedClient();
             var result = await client.SearchAsync("çÅïóíqîT R-18");
 
             Assert.NotNull(result.Illusts);
@@ -132,7 +132,7 @@ namespace PiXharp.Test
         [Fact]
         public async Task DownloadSingleIllustAsStreamByUriAsyncTest()
         {
-            var client = await GetAuthenticatedClient();
+            using var client = await GetAuthenticatedClient();
             var uri = new Uri("https://i.pximg.net/img-original/img/2020/03/19/19/20/13/80221680_p0.jpg");
 
             using var stream = await client.DownloadIllustAsStreamAsync(uri);
@@ -144,7 +144,7 @@ namespace PiXharp.Test
         [Fact]
         public async Task DownloadSingleIllustAsStreamByStringAsyncTest()
         {
-            var client = await GetAuthenticatedClient();
+            using var client = await GetAuthenticatedClient();
             var uri = "https://i.pximg.net/img-original/img/2020/03/19/19/20/13/80221680_p0.jpg";
 
             using var stream = await client.DownloadIllustAsStreamAsync(uri);
@@ -163,7 +163,7 @@ namespace PiXharp.Test
         [Fact]
         public async Task DownloadSingleIllustAsStreamByInvalidUriThrowsPixivNotFoundExceptionTest()
         {
-            var client = await GetAuthenticatedClient();
+            using var client = await GetAuthenticatedClient();
             var uri = new Uri("https://i.pximg.net/img-original/img/2020/03/19/19/20/13/xxxxxxxx_p0.jpg");
 
             await Assert.ThrowsAsync<PixivNotFoundException>(async () => await client.DownloadIllustAsStreamAsync(uri));
