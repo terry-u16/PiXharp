@@ -78,13 +78,7 @@ namespace PiXharp.Authentication
             using var md5 = MD5.Create();
             var bytes = encoding.GetBytes(value);
             var md5Bytes = md5.ComputeHash(bytes);
-            var resultBuilder = new StringBuilder();
-            foreach (var b in md5Bytes)
-            {
-                resultBuilder.Append(b.ToString("x2"));
-            }
-
-            return resultBuilder.ToString();
+            return BitConverter.ToString(md5Bytes).ToLower().Replace("-", "");
         }
     }
 }
