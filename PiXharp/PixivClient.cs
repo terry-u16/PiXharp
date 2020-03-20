@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
@@ -22,7 +23,23 @@ namespace PiXharp
 
         public PixivClient()
         {
-            _innerClient = new HttpClient();
+            var handler = new HttpClientHandler()
+            {
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
+                {
+                    switch (sslPolicyErrors)
+                    {
+                        case System.Net.Security.SslPolicyErrors.None:
+                            return true;
+                        case System.Net.Security.SslPolicyErrors.RemoteCertificateNameMismatch:
+                            return sender.RequestUri.Host == "i.pximg.net";     // Ignore
+                        default:
+                            return false;
+                    }
+                }
+            };
+
+            _innerClient = new HttpClient(handler);
             _innerClient.DefaultRequestHeaders.Add("host", "app-api.pixiv.net");
             _innerClient.DefaultRequestHeaders.Add("App-OS", "ios");
             _innerClient.DefaultRequestHeaders.Add("App-OS-Version", "12.2");
@@ -60,6 +77,15 @@ namespace PiXharp
             var json = await response.Content.ReadAsStringAsync();
             var illustsPage = JsonSerializer.Deserialize<IllustsPage>(json);
             return illustsPage;
+        }
+
+        public override async Task<Stream> DownloadIllustAsStreamAsync(Uri uri)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Headers.Add("Referer", "https://app-api.pixiv.net/");
+            var response = await _innerClient.SendAsync(request);
+
+            return await response.Content.ReadAsStreamAsync();
         }
 
         #region IDisposable Support

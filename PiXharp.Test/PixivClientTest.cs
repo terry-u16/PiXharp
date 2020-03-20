@@ -75,5 +75,18 @@ namespace PiXharp.Test
             Assert.True(result.Illusts.All(i => !string.IsNullOrEmpty(i.Title)));
             Assert.True(Uri.TryCreate(result.NextUrl, UriKind.Absolute, out _));
         }
+
+        [Fact]
+        public async Task DownloadSingleIllustAsStreamByUriAsyncTest()
+        {
+            var client = await GetAuthenticatedClient();
+            var uri = new Uri("https://i.pximg.net/img-original/img/2020/03/19/19/20/13/80221680_p0.jpg");
+            var sha256 = System.Security.Cryptography.SHA256.Create();
+
+            using var stream = await client.DownloadIllustAsStreamAsync(uri);
+            var hash = BitConverter.ToString(sha256.ComputeHash(stream)).Replace("-", "");
+
+            Assert.Equal("F5FC970E3285FF8D13157B0AFABCFB74D751B78DAD24198D25C1AD6B883FF21E", hash);
+        }
     }
 }
