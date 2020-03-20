@@ -16,8 +16,7 @@ namespace PiXharp.Test
         [Fact]
         public async Task LoginTest()
         {
-            using var stream = new FileStream("user.json", FileMode.Open, FileAccess.Read);
-            var profile = await JsonSerializer.DeserializeAsync<UserAuthenticationProfile>(stream);
+            var profile = await PixivClientTestUtility.GetProfileAsync("user.json");
             using var client = new RawPixivClient();
 
             await client.LoginAsync(profile.PixivID ?? "", profile.Password ?? "");
@@ -45,21 +44,15 @@ namespace PiXharp.Test
         {
             using var client = new RawPixivClient();
             
-            var refreshToken = await LoadTokenAsync();
+            var refreshToken = await PixivClientTestUtility.LoadTokenAsync("refresh_token.txt");
             await client.LoginAsync(refreshToken);
 
             Assert.True(client.Authenticated);
         }
 
-        private async Task<string> LoadTokenAsync()
-        {
-            using var stream = new StreamReader("refresh_token.txt", Encoding.UTF8);
-            return await stream.ReadToEndAsync();
-        }
-
         private async Task<RawPixivClient> GetAuthenticatedClient()
         {
-            var refreshToken = await LoadTokenAsync();
+            var refreshToken = await PixivClientTestUtility.LoadTokenAsync("refresh_token.txt");
             var client = new RawPixivClient();
             await client.LoginAsync(refreshToken);
 

@@ -15,8 +15,7 @@ namespace PiXharp.Test
         [Fact]
         public async Task LoginAsyncTest()
         {
-            using var stream = new FileStream("user.json", FileMode.Open, FileAccess.Read);
-            var profile = await JsonSerializer.DeserializeAsync<UserAuthenticationProfile>(stream);
+            var profile = await PixivClientTestUtility.GetProfileAsync("user.json");
             using var client = new PixivClient();
 
             await client.LoginAsync(profile.PixivID ?? "", profile.Password ?? "");
