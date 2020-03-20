@@ -104,7 +104,7 @@ namespace PiXharp.Raw
             return await GetIllustsPageResponseAsync(uri);
         }
 
-        public async Task<IllustsPageResponse> SearchAsyncByNextUri(string uri)
+        internal async Task<IllustsPageResponse> SearchAsyncByNextUri(string uri)
         {
             if (!Authenticated)
             {
