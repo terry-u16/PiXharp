@@ -100,7 +100,23 @@ namespace PiXharp.Raw
                 { "filter", "for_ios" }
             });
 
-            var response = await _innerClient.GetAsync($"{relativeUrl}?{await parameters.ReadAsStringAsync()}");
+            var uri = $"{relativeUrl}?{await parameters.ReadAsStringAsync()}";
+            return await GetIllustsPageResponseAsync(uri);
+        }
+
+        public async Task<IllustsPageResponse> SearchAsyncByNextUri(string uri)
+        {
+            if (!Authenticated)
+            {
+                throw new PixivNotAuthenticatedException("Token is null. You must login before search.");
+            }
+
+            return await GetIllustsPageResponseAsync(uri);
+        }
+
+        private async Task<IllustsPageResponse> GetIllustsPageResponseAsync(string uri)
+        {
+            var response = await _innerClient.GetAsync(uri);
             var json = await response.Content.ReadAsStringAsync();
             var illustsPage = JsonSerializer.Deserialize<IllustsPageResponse>(json);
             return illustsPage;
