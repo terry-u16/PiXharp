@@ -10,6 +10,10 @@ namespace PiXharp
     {
         public abstract bool Authenticated { get; }
 
+        public abstract string? RefreshToken { get; }
+
+        public abstract Task LoginAsync(string refreshToken);
+
         public abstract Task LoginAsync(string pixivID, string password);
 
         public abstract Task<IllustsPage> SearchAsync(string query);

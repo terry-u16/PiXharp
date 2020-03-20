@@ -31,6 +31,24 @@ namespace PiXharp.Test
             await Assert.ThrowsAsync<Exceptions.PixivAuthenticationException>(() => client.LoginAsync("", ""));
         }
 
+        [Fact]
+        public async Task GetRefreshTokenTest()
+        {
+            var client = await GetAuthenticatedClient();
+            Assert.NotNull(client.RefreshToken);
+        }
+
+        [Fact]
+        public async Task LoginByRefreshTokenTest()
+        {
+            var refreshToken = (await GetAuthenticatedClient()).RefreshToken ?? "";
+            var client = new PixivClient();
+            
+            await client.LoginAsync(refreshToken);
+
+            Assert.True(client.Authenticated);
+        }
+
         private async Task<PixivClientBase> GetAuthenticatedClient()
         {
             using var stream = new FileStream("user.json", FileMode.Open, FileAccess.Read);

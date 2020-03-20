@@ -21,6 +21,8 @@ namespace PiXharp
         private const string clientSecret = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj";
         private const string hashSecret = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829ce78c231e05b0bae2c";
 
+        public override string? RefreshToken => _token?.RefreshToken;
+
         public PixivClient()
         {
             var handler = new HttpClientHandler()
@@ -48,11 +50,18 @@ namespace PiXharp
             _innerClient.BaseAddress = new Uri("https://app-api.pixiv.net");
         }
 
+        public override async Task LoginAsync(string refreshToken)
+        {
+            _token = await PixivAuthenticator.AuthenticateAsync(refreshToken, clientID, clientSecret, hashSecret);
+            _innerClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token.AccessToken}");
+        }
+
         public override async Task LoginAsync(string pixivID, string password)
         {
             _token = await PixivAuthenticator.AuthenticateAsync(pixivID, password, clientID, clientSecret, hashSecret);
             _innerClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token.AccessToken}");
         }
+
 
         public override bool Authenticated => _token != null;
 
