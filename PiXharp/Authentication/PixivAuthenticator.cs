@@ -22,7 +22,8 @@ namespace PiXharp.Authentication
                 { "refresh_token", refreshToken }
             };
 
-            return await AuthenticateAsync(loginParameters, clientID, clientSecret, hashSecret);
+            return await AuthenticateAsync(loginParameters, clientID, clientSecret, hashSecret, 
+                response => $"Failed to authenticate. Make sure refresh token is valid. Http status code: {response.StatusCode} {response.ReasonPhrase}");
         }
 
         internal static async Task<Token> AuthenticateAsync(string pixivID, string password, string clientID, string clientSecret, string hashSecret)
@@ -34,10 +35,12 @@ namespace PiXharp.Authentication
                 { "password", password }
             };
 
-            return await AuthenticateAsync(loginParameters, clientID, clientSecret, hashSecret);
+            return await AuthenticateAsync(loginParameters, clientID, clientSecret, hashSecret,
+                response => $"Failed to authenticate. Make sure ID and password are correct. Http status code: {response.StatusCode} {response.ReasonPhrase}");
         }
 
-        private static async Task<Token> AuthenticateAsync(IEnumerable<KeyValuePair<string, string>> loginParameters, string clientID, string clientSecret, string hashSecret)
+        private static async Task<Token> AuthenticateAsync(IEnumerable<KeyValuePair<string, string>> loginParameters, string clientID, string clientSecret, string hashSecret,
+            Func<HttpResponseMessage, string> errorMessageFunc)
         {
             var localTime = DateTimeOffset.UtcNow.ToString("yyyy-MM-ddTHH:mm:sszzz");
             using var md5 = MD5.Create();
@@ -66,7 +69,7 @@ namespace PiXharp.Authentication
             }
             else
             {
-                throw new PixivAuthenticationException("Failed to authenticate. Make sure ID and password are correct.");
+                throw new PixivAuthenticationException(errorMessageFunc(response));
             }
         }
 
