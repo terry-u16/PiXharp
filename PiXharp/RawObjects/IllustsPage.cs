@@ -30,7 +30,7 @@ namespace PiXharp.RawObjects
         [JsonPropertyName("type")]
         public string? Type { get; set; }
         [JsonPropertyName("image_urls")]
-        public ImageUrls? ImageUrls { get; set; }
+        public ImageUrl? ImageUrls { get; set; }
         [JsonPropertyName("caption")]
         public string? Caption { get; set; }
         [JsonPropertyName("restrict")]
@@ -59,7 +59,7 @@ namespace PiXharp.RawObjects
         [JsonPropertyName("meta_single_page")]
         public MetaSinglePage? MetaSinglePage { get; set; }
         [JsonPropertyName("meta_pages")]
-        public MetaPages[]? MetaPages { get; set; }
+        public MetaPage[]? MetaPages { get; set; }
         [JsonPropertyName("total_view")]
         public int TotalView { get; set; }
         [JsonPropertyName("total_bookmarks")]
@@ -109,17 +109,21 @@ namespace PiXharp.RawObjects
         public object? TranslatedName { get; set; }
     }
 
-    public class MetaPages
+    public class MetaPage
     {
         [JsonPropertyName("image_urls")]
-        public ImageUrls? ImageUrls { get; set; }
+        public ImageUrl? ImageUrls { get; set; }
     }
 
-    public class ImageUrls
+    public class ImageUrl
     {
+        [JsonPropertyName("square_medium")]
         public string? SquareMedium { get; set; }
+        [JsonPropertyName("medium")]
         public string? Medium { get; set; }
+        [JsonPropertyName("large")]
         public string? Large { get; set; }
+        [JsonPropertyName("original")]
         public string? Original { get; set; }
     }
 }
