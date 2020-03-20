@@ -15,5 +15,7 @@ namespace PiXharp
         public abstract Task<IllustsPage> SearchAsync(string query);
 
         public abstract Task<Stream> DownloadIllustAsStreamAsync(Uri uri);
+
+        public Task<Stream> DownloadIllustAsStreamAsync(string uri) => DownloadIllustAsStreamAsync(new Uri(uri));
     }
 }
