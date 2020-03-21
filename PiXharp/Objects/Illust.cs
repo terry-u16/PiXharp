@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PiXharp.Raw;
 using PiXharp.Exceptions;
+using System.IO;
 
 namespace PiXharp
 {
@@ -83,6 +84,29 @@ namespace PiXharp
             ImageUris = GetImageUris(illust);
             TotalViews = illust.TotalView;
             TotalBookmarks = illust.TotalBookmarks;
+        }
+
+        public string GetFileName(int page, ImageSize imageSize)
+        {
+            if (page < 0 || PageCount <= page)
+            {
+                throw new ArgumentOutOfRangeException(nameof(page), $"Page is out of range. Value must be between 0 and {PageCount - 1}");
+            }
+
+            var uris = ImageUris[page];
+            switch (imageSize)
+            {
+                case ImageSize.SquareMedium:
+                    return Path.GetFileName(uris.SquareMediumImageUri.ToString());
+                case ImageSize.Medium:
+                    return Path.GetFileName(uris.MediumImageUri.ToString());
+                case ImageSize.Large:
+                    return Path.GetFileName(uris.LargeImageUri.ToString());
+                case ImageSize.Original:
+                    return Path.GetFileName(uris.OriginalImageUri.ToString());
+                default:
+                    throw new ArgumentException(nameof(imageSize), $"Parameter imageSize is invalid.");
+            }
         }
 
         private ImageType GetImageTypeOf(IllustResponse illust)

@@ -78,6 +78,20 @@ namespace PiXharp.Test
             Assert.Equal("「もう朝・・？」", result.Title);
         }
 
+        [Fact]
+        public async Task GetImageFileNameTest()
+        {
+            const long id = 80221680L;
+            using var client = await GetAuthenticatedClient();
+            var result = await client.GetIllustDetailAsync(id);
+            
+            Assert.Equal($"{id}_p0_square1200.jpg", result.GetFileName(0, ImageSize.SquareMedium));
+            Assert.Equal($"{id}_p0_master1200.jpg", result.GetFileName(0, ImageSize.Medium));
+            Assert.Equal($"{id}_p0_master1200.jpg", result.GetFileName(0, ImageSize.Large));
+            Assert.Equal($"{id}_p0.jpg", result.GetFileName(0, ImageSize.Original));
+        }
+
+
         #region Private methods
 
         private async Task<PixivClient> GetAuthenticatedClient()
