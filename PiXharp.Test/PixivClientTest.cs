@@ -106,6 +106,29 @@ namespace PiXharp.Test
             Assert.Equal("F5FC970E3285FF8D13157B0AFABCFB74D751B78DAD24198D25C1AD6B883FF21E", hash);
         }
 
+        [Fact]
+        public async Task GetIllustStreamsAsyncTest()
+        {
+            const long id = 71950690L;
+            using var client = await GetAuthenticatedClient();
+            var hashes = new[]
+            {
+                "DC32686206293A5B67AA37B1CF06A7B637D0C6F1A5A7BAA123980D6C84B32B89",
+                "EB7C5DF644929317212AF25CEFEFDAAD94E79CBC6FF6044E5B1B17BD31C7668C"
+            };
+
+            var illust = await client.GetIllustDetailAsync(id);
+
+            int page = 0;
+            await foreach (var stream in client.DownloadIllustsAsStreamAsync(illust, ImageSize.Original))
+            {
+                var hash = PixivClientTestUtility.GetSha256Hash(stream);
+
+                Assert.Equal($"{id}_p{page}.png", stream.FileName);
+                Assert.Equal(hashes[page++], hash);
+            }
+        }
+
         #region Private methods
 
         private async Task<PixivClient> GetAuthenticatedClient()

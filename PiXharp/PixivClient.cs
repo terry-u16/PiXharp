@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PiXharp.Exceptions;
@@ -72,7 +73,22 @@ namespace PiXharp
             }
 
             var fileName = illust.GetFileName(page, imageSize);
-            using var httpStream = await _rawClient.DownloadIllustAsStreamAsync(illust.ImageUris[page][imageSize]);
+            return await DownloadIllustAsStreamAsync(illust.ImageUris[page][imageSize], fileName);
+        }
+
+        public async override IAsyncEnumerable<ImageStream> DownloadIllustsAsStreamAsync(Illust illust, ImageSize imageSize)
+        {
+            int page = 0;
+            foreach (var uri in illust.ImageUris.Select(u => u[imageSize]))
+            {
+                var fileName = illust.GetFileName(page, imageSize);
+                yield return await DownloadIllustAsStreamAsync(illust.ImageUris[page++][imageSize], fileName);
+            }
+        }
+
+        private async Task<ImageStream> DownloadIllustAsStreamAsync(Uri uri, string fileName)
+        {
+            using var httpStream = await _rawClient.DownloadIllustAsStreamAsync(uri);
             var imageStream = new ImageStream(httpStream, fileName);
             return imageStream;
         }
