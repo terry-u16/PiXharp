@@ -63,5 +63,18 @@ namespace PiXharp
                 nextUrl = response.NextUrl;
             }
         }
+
+        public async override Task<ImageStream> DownloadIllustAsStreamAsync(Illust illust, int page, ImageSize imageSize)
+        {
+            if (page < 0 || illust.PageCount < page)
+            {
+                throw new ArgumentOutOfRangeException(nameof(page), $"Page is out of range. Value must be between 0 and {illust.PageCount}");
+            }
+
+            var fileName = illust.GetFileName(page, imageSize);
+            using var httpStream = await _rawClient.DownloadIllustAsStreamAsync(illust.ImageUris[page][imageSize]);
+            var imageStream = new ImageStream(httpStream, fileName);
+            return imageStream;
+        }
     }
 }

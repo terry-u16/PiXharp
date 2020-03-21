@@ -92,6 +92,20 @@ namespace PiXharp.Test
         }
 
 
+        [Fact]
+        public async Task GetIllustStreamAsyncTest()
+        {
+            const long id = 80221680L;
+            using var client = await GetAuthenticatedClient();
+
+            var illust = await client.GetIllustDetailAsync(id);
+            using var stream = await client.DownloadIllustAsStreamAsync(illust, 0, ImageSize.Original);
+            var hash = PixivClientTestUtility.GetSha256Hash(stream);
+
+            Assert.Equal($"{id}_p0.jpg", stream.FileName);
+            Assert.Equal("F5FC970E3285FF8D13157B0AFABCFB74D751B78DAD24198D25C1AD6B883FF21E", hash);
+        }
+
         #region Private methods
 
         private async Task<PixivClient> GetAuthenticatedClient()

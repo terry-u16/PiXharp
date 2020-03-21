@@ -19,6 +19,8 @@ namespace PiXharp
 
         public abstract IAsyncEnumerable<Illust> SearchIllustsAsync(string query);
 
+        public abstract Task<ImageStream> DownloadIllustAsStreamAsync(Illust illust, int page, ImageSize imageSize);
+
         #region IDisposable Support
 
         protected virtual void Dispose(bool disposing)
