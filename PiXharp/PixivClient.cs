@@ -88,7 +88,7 @@ namespace PiXharp
 
         private async Task<ImageStream> DownloadIllustAsStreamAsync(Uri uri, string fileName)
         {
-            using var httpStream = await _rawClient.DownloadIllustAsStreamAsync(uri);
+            var httpStream = await _rawClient.DownloadIllustAsStreamAsync(uri);
             var imageStream = new ImageStream(httpStream, fileName);
             return imageStream;
         }
