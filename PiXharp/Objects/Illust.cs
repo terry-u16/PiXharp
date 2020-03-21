@@ -46,6 +46,26 @@ namespace PiXharp
             LargeImageUri = new Uri(largeUri);
             OriginalImageUri = new Uri(originalUri);
         }
+
+        internal Uri this[ImageSize imageSize]
+        {
+            get
+            {
+                switch (imageSize)
+                {
+                    case ImageSize.SquareMedium:
+                        return SquareMediumImageUri;
+                    case ImageSize.Medium:
+                        return MediumImageUri;
+                    case ImageSize.Large:
+                        return LargeImageUri;
+                    case ImageSize.Original:
+                        return OriginalImageUri;
+                    default:
+                        throw new ArgumentException(nameof(imageSize), $"Parameter imageSize is invalid.");
+                }
+            }
+        }
     }
 
     public class Illust
@@ -93,20 +113,7 @@ namespace PiXharp
                 throw new ArgumentOutOfRangeException(nameof(page), $"Page is out of range. Value must be between 0 and {PageCount - 1}");
             }
 
-            var uris = ImageUris[page];
-            switch (imageSize)
-            {
-                case ImageSize.SquareMedium:
-                    return Path.GetFileName(uris.SquareMediumImageUri.ToString());
-                case ImageSize.Medium:
-                    return Path.GetFileName(uris.MediumImageUri.ToString());
-                case ImageSize.Large:
-                    return Path.GetFileName(uris.LargeImageUri.ToString());
-                case ImageSize.Original:
-                    return Path.GetFileName(uris.OriginalImageUri.ToString());
-                default:
-                    throw new ArgumentException(nameof(imageSize), $"Parameter imageSize is invalid.");
-            }
+            return Path.GetFileName(ImageUris[page][imageSize].ToString());
         }
 
         private ImageType GetImageTypeOf(IllustResponse illust)
